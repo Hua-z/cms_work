@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xj.apps.cms.dao.extend.CategoryExtendMapper">
+  <resultMap id="NewBaseResultMap" type="com.xj.apps.cms.bean.extend.CategoryExtend"
+             extends="com.xj.apps.cms.dao.CategoryMapper.BaseResultMap">
+    <id property="id" column="cid" jdbcType="BIGINT"></id>
+    <result column="cname" jdbcType="VARCHAR" property="name" />
+    <result column="cdes" jdbcType="VARCHAR" property="description" />
+    <result column="cno" jdbcType="INTEGER" property="no" />
+    <result column="cparent" jdbcType="BIGINT" property="parentId" />
+  </resultMap>
+  <resultMap id="BaseExtendResultMap" type="com.xj.apps.cms.bean.extend.CategoryExtend"
+  extends="com.xj.apps.cms.dao.CategoryMapper.BaseResultMap">
+    <association property="category" column="parent_id" select="com.xj.apps.cms.dao.CategoryMapper.selectByPrimaryKey"></association>
+    <collection property="categories" resultMap="NewBaseResultMap"></collection>
+  </resultMap>
+  <select id="selectById" parameterType="long" resultMap="BaseExtendResultMap">
+      SELECT C1.*,C2.ID CID,C2.NAME CNAME,C2.DESCRIPTION CDES,C2.NO CNO,C2.PARENT_ID CPARENT
+      FROM CMS_CATEGORY C1 LEFT OUTER JOIN CMS_CATEGORY C2
+      ON C1.id = C2.parent_id
+      WHERE C1.id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseExtendResultMap">
+    SELECT *
+    FROM CMS_CATEGORY
+  </select>
+</mapper>

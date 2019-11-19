@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xj.apps.cms.dao.extend.ArticleExtendMapper">
+    <select id="selectById" parameterType="long" resultMap="BaseExtendResultMap">
+      SELECT AA.*,CC.ID AS CID,CC.CONTENT AS CCONTENT,CC.*
+      FROM CMS_ARTICLE AS AA LEFT OUTER JOIN CMS_COMMENT AS CC
+      ON AA.ID = CC.ARTICLE_ID
+      WHERE AA.ID = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectAll" resultMap="BaseExtendResultMap">
+        SELECT *
+        FROM CMS_ARTICLE
+    </select>
+
+  <resultMap id="CommentExtendResultMap" type="com.xj.apps.cms.bean.Comment"
+             extends="com.xj.apps.cms.dao.CommentMapper.BaseResultMap">
+      <id column="cid" jdbcType="BIGINT" property="id" />
+      <result column="ccontent" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  
+  <resultMap id="BaseExtendResultMap" type="com.xj.apps.cms.bean.extend.ArticleExtend"
+    extends="com.xj.apps.cms.dao.ArticleMapper.BaseResultMap">
+      <association property="category" column="parent_id" select="com.xj.apps.cms.dao.CategoryMapper.selectByPrimaryKey"></association>
+    <collection property="comments" resultMap="CommentExtendResultMap"></collection>
+  </resultMap>
+
+</mapper>
